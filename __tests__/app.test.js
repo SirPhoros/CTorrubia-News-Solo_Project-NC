@@ -32,3 +32,25 @@ describe('GET /api/topics', () => {
 			})
 	})
 })
+describe('GET /api', () => {
+	test('returns a JSON file with all the information provided by a JSON file', () => {
+		return request(app)
+			.get('/api')
+			.expect(200)
+			.then(({ body }) => {
+				expect(typeof body).toBe('object')
+				console.log(body.endpoints)
+			})
+	})
+})
+
+describe('ERROR 404 - Non valid endpoint', () => {
+	test('returns an error message if a non-valid endpoint is introduced', () => {
+		return request(app)
+			.get('/api/nonsense')
+			.expect(404)
+			.then((result) => {
+				console.log(result.body)
+			})
+	})
+})

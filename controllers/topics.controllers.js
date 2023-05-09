@@ -6,7 +6,7 @@ exports.getTopics = (req, res, next) => {
 			res.status(200).send({ topics: topics })
 		})
 		.catch((err) => {
-			// console.log(err)
+			console.log(err)
 			next(err)
 		})
 }
