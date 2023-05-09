@@ -13,13 +13,13 @@ app.get('/api', getAPI)
 app.get('/api/topics', getTopics)
 
 //ERROR HANDLING
-// app.use((err, req, res, next) => {
-// 	if (err.status && err.msg) {
-// 		res.status(err.status).send({ msg: err.msg })
-// 	} else {
-// 		next(err)
-// 	}
-// })
+app.use((err, req, res, next) => {
+	if (err.status && err.msg) {
+		res.status(err.status).send({ msg: err.msg })
+	} else {
+		next(err)
+	}
+})
 
 app.use((err, req, res, next) => {
 	res.status(404).send({ msg: 'endpoint not found' })

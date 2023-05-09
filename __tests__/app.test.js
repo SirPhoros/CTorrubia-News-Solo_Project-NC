@@ -39,7 +39,7 @@ describe('GET /api', () => {
 			.expect(200)
 			.then(({ body }) => {
 				expect(typeof body).toBe('object')
-				console.log(body.endpoints)
+				// console.log(body.endpoints)
 			})
 	})
 })
