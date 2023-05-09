@@ -3,6 +3,7 @@ const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data')
 const db = require('../db/connection')
 const app = require('../app')
+const endpoints = require('../endpoints.json')
 
 beforeEach(() => {
 	return seed(data)
@@ -29,6 +30,17 @@ describe('GET /api/topics', () => {
 					expect(typeof topic.slug).toBe('string')
 					expect(typeof topic.description).toBe('string')
 				})
+			})
+	})
+})
+
+describe('GET /api', () => {
+	test('returns a JSON file with all the information provided by a JSON file', () => {
+		return request(app)
+			.get('/api')
+			.expect(200)
+			.then((data) => {
+				expect(data.body).toEqual(endpoints)
 			})
 	})
 })
