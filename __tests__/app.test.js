@@ -37,8 +37,8 @@ describe('ERROR 404 - Non valid endpoint', () => {
 		return request(app)
 			.get('/api/nonsense')
 			.expect(404)
-			.then((result) => {
-				console.log(result.body)
+			.then(({ body }) => {
+				expect(body.msg).toBe('endpoint not found')
 			})
 	})
 })
