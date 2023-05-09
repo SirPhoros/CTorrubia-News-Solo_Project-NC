@@ -86,6 +86,62 @@ describe('GET /api/articles/:article_id', () => {
 	})
 })
 
+describe('GET /api/articles/:article_id/comments', () => {
+	test('GET - status 200 - returns an article object of one article', () => {
+		return request(app)
+			.get('/api/articles/1/comments')
+			.expect(200)
+			.then(({ body: { comments } }) => {
+				expect(comments.length).toBe(11)
+			})
+	})
+	test('GET - status 200 - returns an article object containing the right amount of data', () => {
+		return request(app)
+			.get('/api/articles/1/comments')
+			.expect(200)
+			.then(({ body: { comments } }) => {
+				comments.forEach((comment) => {
+					expect(typeof comment.comment_id).toBe('number')
+					expect(typeof comment.created_at).toBe('string')
+					expect(typeof comment.votes).toBe('number')
+					expect(typeof comment.author).toBe('string')
+					expect(typeof comment.body).toBe('string')
+					expect(typeof comment.article_id).toBe('number')
+				})
+			})
+	})
+	test('GET - status 404 - returns error if article is not found', () => {
+		return request(app)
+			.get('/api/articles/10000/comments')
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('No article found with that ID')
+			})
+	})
+	test('GET - status 400 - returns error if the article_id is not a number', () => {
+		return request(app)
+			.get('/api/articles/nonsense/comments')
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Not valid type of input')
+			})
+	})
+	test('GET - status 200 - returns newest comment first', () => {
+		return request(app)
+			.get('/api/articles/1/comments')
+			.expect(200)
+			.then(({ body: { comments } }) => {
+				expect(comments).toBeSorted({ descending: true })
+				expect(comments).toBeSortedBy('created_at', {
+					descending: true,
+				})
+				expect(comments).not.toBeSortedBy('created_at', {
+					ascending: true,
+				})
+				expect(comments).not.toBeSortedBy('votes')
+			})
+	})
+})
 describe('ERROR 404 - Non valid endpoint', () => {
 	test('returns an error message if a non-valid endpoint is introduced', () => {
 		return request(app)
