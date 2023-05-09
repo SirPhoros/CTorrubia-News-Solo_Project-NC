@@ -141,6 +141,14 @@ describe('GET /api/articles/:article_id/comments', () => {
 				expect(comments).not.toBeSortedBy('votes')
 			})
 	})
+	test('GET - Easter Egg', () => {
+		return request(app)
+			.get('/api/articles/teapot/comments')
+			.expect(418)
+			.then(({ body: { msg } }) => {
+				expect(msg).toBe("Hi, I'm just a tiny teapot!")
+			})
+	})
 })
 describe('ERROR 404 - Non valid endpoint', () => {
 	test('returns an error message if a non-valid endpoint is introduced', () => {

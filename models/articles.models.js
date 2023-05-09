@@ -17,8 +17,9 @@ exports.selectArticleID = (articleId) => {
 	})
 }
 
-
 exports.selectArticlesComment = (articleId) => {
+	if (articleId === 'teapot')
+		return Promise.reject({ status: 418, msg: "Hi, I'm just a tiny teapot!" })
 	let queryStr = `
     SELECT comment_id, votes, created_at, author, body, article_id FROM comments
     WHERE article_id = $1
