@@ -10,6 +10,7 @@ beforeEach(() => {
 
 afterAll(() => db.end())
 
+
 describe('GET /api', () => {
 	test('returns a JSON file with all the information provided by a JSON file', () => {
 		return request(app)

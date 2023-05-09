@@ -8,6 +8,4 @@ app.use(express.json())
 //API
 app.get('/api', getAPI)
 
-
-
 module.exports = app
