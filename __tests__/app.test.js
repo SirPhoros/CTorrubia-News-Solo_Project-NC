@@ -44,3 +44,14 @@ describe('GET /api', () => {
 			})
 	})
 })
+
+describe('ERROR 404 - Non valid endpoint', () => {
+	test('returns an error message if a non-valid endpoint is introduced', () => {
+		return request(app)
+			.get('/api/nonsense')
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('endpoint not found')
+			})
+	})
+})
