@@ -159,6 +159,49 @@ describe('GET /api/articles/:article_id/comments', () => {
 			})
 	})
 })
+describe('GET /api/articles', () => {
+	test('GET - status 200 - returns an array containing the right type of data [author, title, article_id, topic, created_at, votes, article_img_url, comment_count] of the right type', () => {
+		return request(app)
+			.get('/api/articles')
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles.length).toBe(5)
+				body.articles.forEach((article) => {
+					expect(article.hasOwnProperty('author'))
+					expect(typeof article.author).toBe('string')
+					expect(article.hasOwnProperty('title'))
+					expect(typeof article.title).toBe('string')
+					expect(article.hasOwnProperty('article_id'))
+					expect(typeof article.article_id).toBe('number')
+					expect(article.hasOwnProperty('topic'))
+					expect(typeof article.topic).toBe('string')
+					expect(article.hasOwnProperty('created_at'))
+					expect(typeof article.created_at).toBe('string')
+					expect(article.hasOwnProperty('votes'))
+					expect(typeof article.votes).toBe('number')
+					expect(article.hasOwnProperty('article_img_url'))
+					expect(typeof article.article_img_url).toBe('string')
+					//https://www.postgresql.org/docs/8.2/functions-aggregate.html It will return it as a string, unless COUNT(*)::INT
+					expect(article.hasOwnProperty('comment_count'))
+					expect(typeof article.comment_count).toBe('number')
+					//has not own property 'body'
+					expect(article.hasOwnProperty('body')).toBe(false)
+				})
+			})
+	})
+	test('GET - status 200 - returns an array ordered by date, descending', () => {
+		return request(app)
+			.get('/api/articles')
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.articles).toBeSortedBy('created_at', {
+					descending: true,
+				})
+				expect(body.articles).not.toBeSortedBy('votes')
+			})
+	})
+})
+
 describe('ERROR 404 - Non valid endpoint', () => {
 	test('returns an error message if a non-valid endpoint is introduced', () => {
 		return request(app)
