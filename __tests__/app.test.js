@@ -212,7 +212,7 @@ describe('GET /api/users', () => {
 			})
 	})
 
-	test('GET - status 200 - returns an array containing the right type of data (slug; description)', () => {
+	test('GET - status 200 - returns an array containing the right type of data [username, name, avatar_url]', () => {
 		return request(app)
 			.get('/api/users')
 			.expect(200)
