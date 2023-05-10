@@ -110,6 +110,15 @@ describe('GET /api/articles/:article_id/comments', () => {
 				})
 			})
 	})
+	test('GET - status 200 - returns an empty array if the article has no comments', () => {
+		return request(app)
+			.get('/api/articles/2/comments')
+			.expect(200)
+			.then(({ body: { comments } }) => {
+				expect(comments).toEqual([])
+			})
+	})
+
 	test('GET - status 404 - returns error if article is not found', () => {
 		return request(app)
 			.get('/api/articles/10000/comments')
