@@ -1,5 +1,10 @@
 const { getAPI } = require('./controllers/api.controller')
-const { getArticleId, getArticle, getArticlesComment } = require('./controllers/articles.controller')
+const {
+	getArticleId,
+	getArticle,
+	getArticlesComment,
+} = require('./controllers/articles.controller')
+const { deleteComment } = require('./controllers/comments.controller')
 const { getTopics } = require('./controllers/topics.controllers')
 
 const express = require('express')
@@ -18,9 +23,20 @@ app.get('/api/articles/:article_id', getArticleId)
 app.get('/api/articles/:article_id/comments', getArticlesComment)
 app.get('/api/articles/', getArticle)
 
+app.delete('/api/comments/:comment_id', deleteComment)
 //ERROR HANDLING
 app.all('*', (req, res) => {
 	res.status(404).send({ msg: 'endpoint not found' })
+})
+
+app.use((err, req, res, next) => {
+	if (err.code === '22003') {
+		res
+			.status(400)
+			.send({ msg: 'Bad request: ID is out of range for type integer' })
+	} else {
+		next(err)
+	}
 })
 
 app.use((err, req, res, next) => {

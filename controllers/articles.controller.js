@@ -35,3 +35,5 @@ exports.getArticle = (req, res, next) => {
 			next(err)
 		})
 }
+
+

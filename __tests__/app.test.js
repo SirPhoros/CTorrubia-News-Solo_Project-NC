@@ -212,3 +212,35 @@ describe('ERROR 404 - Non valid endpoint', () => {
 			})
 	})
 })
+
+describe.only('DELETE /api/comments/:comment_id', () => {
+	test('DELETE - status: 204 - responds with right status code', () => {
+		return request(app).delete('/api/comments/1').expect(204)
+	})
+	test('DELETE - status: 400 - returns an error if user tries to insert a non-numerical (whole) ID', () => {
+		return request(app)
+			.delete('/api/comments/nonsense')
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Not valid type of input')
+			})
+	})
+	test('DELETE - status: 400 - returns an error if the ID is out of scope for the type of data', () => {
+		return request(app)
+			.delete('/api/comments/9999999999')
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe(
+					'Bad request: ID is out of range for type integer'
+				)
+			})
+	})
+	test('DELETE - status: 404 - returns an error if there is no comment with that ID', () => {
+		return request(app)
+			.delete('/api/comments/999')
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('No article found with that ID')
+			})
+	})
+})
