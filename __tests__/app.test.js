@@ -143,6 +143,20 @@ describe('POST /api/articles/:article_id/comments', () => {
 				expect(comment).toHaveProperty('body')
 			})
 	})
+	test('POST - Status: 201 - responds with an object despite having unnecesarry properties', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+				nonsense: 10,
+			})
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				expect(comment).not.toHaveProperty('nonsense')
+			})
+	})
+
 	///Expecting happy path as in the FrontEnd will be have boxes with "body" and "username", so nothing despite that will be able to be sent.
 	test('POST - Status: 404 - responds with an error if user not found', () => {
 		return request(app)
@@ -152,7 +166,9 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(400)
 			.then(({ body }) => {
-				expect(body.msg).toBe('Bad request: The body of the comment is required')
+				expect(body.msg).toBe(
+					'Bad request: The body of the comment is required'
+				)
 			})
 	})
 	test('POST - Status: 404 - responds with an error if user not found', () => {
@@ -163,7 +179,9 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(400)
 			.then(({ body }) => {
-				expect(body.msg).toBe('Bad request: An username to attribute this comment is required')
+				expect(body.msg).toBe(
+					'Bad request: An username to attribute this comment is required'
+				)
 			})
 	})
 
@@ -176,7 +194,33 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(404)
 			.then(({ body }) => {
-				expect(body.msg).toBe('User not found')
+				expect(body.msg).toBe('One of your parameters is not found')
+			})
+	})
+	test('POST - status 404 - returns error if article is not found', () => {
+		return request(app)
+			.post('/api/articles/10000/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(404)
+			.then(({ body }) => {
+
+				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error.
+				expect(body.msg).toBe('One of your parameters is not found')
+			})
+	})
+	test('POST - status 400 - returns error if the article_id is not a number', () => {
+		return request(app)
+			.post('/api/articles/nonsense/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Not valid type of input')
 			})
 	})
 })

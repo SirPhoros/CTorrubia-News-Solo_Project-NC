@@ -34,6 +34,7 @@ exports.postCommentByArticleID = (req, res, next) => {
 			res.status(201).send({ comment: comment })
 		})
 		.catch((err) => {
+			// console.log(err)
 			next(err)
 		})
 }
