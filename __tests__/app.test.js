@@ -87,20 +87,12 @@ describe('GET /api/articles/:article_id', () => {
 })
 
 describe('GET /api/articles', () => {
-	test('GET - status 200 - returns an array containing the right amount of data', () => {
-		return request(app)
-			.get('/api/articles')
-			.expect(200)
-			.then(({ body }) => {
-				expect(body.articles.length).toBe(5)
-			})
-	})
-
 	test('GET - status 200 - returns an array containing the right type of data [author, title, article_id, topic, created_at, votes, article_img_url, comment_count] of the right type', () => {
 		return request(app)
 			.get('/api/articles')
 			.expect(200)
 			.then(({ body }) => {
+				expect(body.articles.length).toBe(5)
 				body.articles.forEach((article) => {
 					expect(article.hasOwnProperty('author'))
 					expect(typeof article.author).toBe('string')
@@ -131,9 +123,6 @@ describe('GET /api/articles', () => {
 			.then(({ body }) => {
 				expect(body.articles).toBeSortedBy('created_at', {
 					descending: true,
-				})
-				expect(body.articles).not.toBeSortedBy('created_at', {
-					ascending: true,
 				})
 				expect(body.articles).not.toBeSortedBy('votes')
 			})
