@@ -202,6 +202,33 @@ describe('GET /api/articles', () => {
 	})
 })
 
+describe('GET /api/users', () => {
+	test('GET - status 200 - returns an array containing the right amount of data', () => {
+		return request(app)
+			.get('/api/users')
+			.expect(200)
+			.then(({ body: { users } }) => {
+				expect(users.length).toBe(4)
+			})
+	})
+
+	test('GET - status 200 - returns an array containing the right type of data (slug; description)', () => {
+		return request(app)
+			.get('/api/users')
+			.expect(200)
+			.then(({ body: { users } }) => {
+				users.forEach((user) => {
+					expect(user.hasOwnProperty('username'))
+					expect(typeof user.username).toBe('string')
+					expect(user.hasOwnProperty('name'))
+					expect(typeof user.name).toBe('string')
+					expect(user.hasOwnProperty('avatar_url'))
+					expect(typeof user.avatar_url).toBe('string')
+				})
+			})
+	})
+})
+
 describe('ERROR 404 - Non valid endpoint', () => {
 	test('returns an error message if a non-valid endpoint is introduced', () => {
 		return request(app)

@@ -3,6 +3,7 @@ const { getArticleId, getArticle, getArticlesComment } = require('./controllers/
 const { getTopics } = require('./controllers/topics.controllers')
 
 const express = require('express')
+const { getUsers } = require('./controllers/users.controllers')
 const app = express()
 
 app.use(express.json())
@@ -17,6 +18,11 @@ app.get('/api', getAPI)
 app.get('/api/articles/:article_id', getArticleId)
 app.get('/api/articles/:article_id/comments', getArticlesComment)
 app.get('/api/articles/', getArticle)
+
+
+
+//USERS
+app.get('/api/users', getUsers)
 
 //ERROR HANDLING
 app.all('*', (req, res) => {
