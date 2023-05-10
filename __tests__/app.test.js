@@ -129,6 +129,47 @@ describe('GET /api/articles', () => {
 	})
 })
 
+describe('POST /api/articles/:article_id/comments', () => {
+	test('POST - Status: 201 - responds with an object with required properties and sends back the posted comment', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				expect(comment).toHaveProperty('author')
+				expect(comment).toHaveProperty('body')
+			})
+	})
+	///Expecting happy path as in the FrontEnd will be have boxes with "body" and "username", so nothing despite that will be able to be sent.
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'icellusedkars',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: A comment is required')
+			})
+	})
+
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'Demiurge',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('User not found')
+			})
+	})
+})
+
 describe('ERROR 404 - Non valid endpoint', () => {
 	test('returns an error message if a non-valid endpoint is introduced', () => {
 		return request(app)
