@@ -235,7 +235,6 @@ describe('PATCH /api/articles/:article_id', () => {
 			.send({ inc_votes: 1 })
 			.expect(404)
 			.then(({ body }) => {
-				console.log(body)
 				expect(body.msg).toBe('Article not found')
 			})
 	})
