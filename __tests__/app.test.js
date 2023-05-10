@@ -152,7 +152,18 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(400)
 			.then(({ body }) => {
-				expect(body.msg).toBe('Bad request: A comment is required')
+				expect(body.msg).toBe('Bad request: The body of the comment is required')
+			})
+	})
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: An username to attribute this comment is required')
 			})
 	})
 

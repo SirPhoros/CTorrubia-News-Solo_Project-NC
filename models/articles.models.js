@@ -34,7 +34,16 @@ exports.selectArticles = () => {
 exports.addCommentByArticleID = (articleComment, articleID) => {
 	const { username, body } = articleComment
 	if (!body) {
-		return Promise.reject({ status: 400, msg: 'Bad request: A comment is required' })
+		return Promise.reject({
+			status: 400,
+			msg: 'Bad request: The body of the comment is required',
+		})
+	}
+	if (!username) {
+		return Promise.reject({
+			status: 400,
+			msg: 'Bad request: An username to attribute this comment is required',
+		})
 	}
 	const queryParams = [username, body, articleID]
 
