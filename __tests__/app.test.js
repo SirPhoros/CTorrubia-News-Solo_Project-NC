@@ -526,6 +526,69 @@ describe('GET - /api/articles - Queries Handling', () => {
 			})
 	})
 })
+describe.only('POST /api/articles/', () => {
+	test('POST - Status: 201 - responds with an object with required properties and sends back the posted article', () => {
+		return request(app)
+			.post('/api/articles/')
+			.send({
+				title: 'Test article is my passion',
+				//TOPIC && AUTHOR are FOREIGN KEYS
+				topic: 'mitch',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+				article_img_url:
+					'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+			})
+			.expect(201)
+			.then(({ body: { article } }) => {
+				//First version of testing objects
+				expect(article).toEqual(
+					expect.objectContaining({
+						author: expect.any(String),
+						title: expect.any(String),
+						body: expect.any(String),
+						topic: expect.any(String),
+						article_img_url: expect.any(String),
+						article_id: expect.any(Number),
+						votes: expect.any(Number),
+						created_at: expect.any(String),
+						//comment_count should be 0 as it is a brand new article, then this count won't stay in the table unless called it through previous "GET /api/articles"
+						comment_count: expect.any(Number),
+					})
+				)
+			})
+	})
+	test('POST - Status: 201 - responds with an object despite having unnecesarry properties', () => {
+		return request(app)
+			.post('/api/articles/')
+			.send({
+				title: 'Test article is my passion',
+				//TOPIC && AUTHOR are FOREIGN KEYS
+				topic: 'mitch',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+				nonsense: 10,
+			})
+			.expect(201)
+			.then(({ body: { article } }) => {
+				expect(article).toEqual(expect.not.objectContaining({ nonsense: 10 }))
+			})
+	})
+
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/')
+			.send({
+				topic: 'mitch',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Missing part(s) of the request')
+			})
+	})
+})
 
 describe('ERROR 404 - Non valid endpoint', () => {
 	test('returns an error message if a non-valid endpoint is introduced', () => {
