@@ -25,16 +25,14 @@ app.get('/api', getAPI)
 app.get('/api/articles/:article_id', getArticleId)
 app.get('/api/articles/:article_id/comments', getArticlesComment)
 app.get('/api/articles/', getArticle)
-
-
+app.patch('/api/articles/:article_id', patchArticle)
+app.post('/api/articles/:article_id/comments', postCommentByArticleID)
 
 //USERS
 app.get('/api/users', getUsers)
-app.delete('/api/comments/:comment_id', deleteComment)
 
-app.patch('/api/articles/:article_id', patchArticle)
 //COMMENTS
-app.post('/api/articles/:article_id/comments', postCommentByArticleID)
+app.delete('/api/comments/:comment_id', deleteComment)
 
 //ERROR HANDLING
 ////PSQL errors
