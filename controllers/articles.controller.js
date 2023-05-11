@@ -27,7 +27,6 @@ exports.getArticlesComment = (req, res, next) => {
 		})
 }
 exports.getArticle = (req, res, next) => {
-	// console.log("in controller")
 	selectArticles()
 		.then((articles) => {
 			res.status(200).send({ articles: articles })

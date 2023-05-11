@@ -262,7 +262,6 @@ describe('PATCH /api/articles/:article_id', () => {
 			.send({ nonsense: 1 })
 			.expect(400)
 			.then(({ body }) => {
-				console.log(body)
 				expect(body.msg).toBe('Invalid category to be Updated')
 			})
 	})
