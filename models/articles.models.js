@@ -45,3 +45,42 @@ exports.selectArticles = () => {
 		return result.rows
 	})
 }
+
+exports.addCommentByArticleID = (articleComment, articleID) => {
+	const { username, body } = articleComment
+	if (!body) {
+		return Promise.reject({
+			status: 400,
+			msg: 'Bad request: The body of the comment is required',
+		})
+	}
+	if (!username) {
+		return Promise.reject({
+			status: 400,
+			msg: 'Bad request: An username to attribute this comment is required',
+		})
+	}
+
+	const queryParams = [username, body, articleID]
+	let queryStr = `INSERT INTO comments(author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`
+
+	return db.query(queryStr, queryParams).then((result) => {
+		if (result.rows.length === 0)
+			return Promise.reject({
+				status: 404,
+				msg: 'No article found with that ID',
+			})
+		return result.rows[0]
+	})
+	// console.log(
+	// )
+	// return db
+	// 	.query(queryStr, [articleComment.username, articleComment.body, articleID])
+	// 	.then((result) => {
+	// 		console.log(result)
+	// 		// if (result.rows.length === 0) {
+	// 		// 	return Promise.reject({ status: 404, msg: 'Article not found' })
+	// 		// }
+	// 		return result.rows[0]
+	// 	})
+}
