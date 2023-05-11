@@ -1,6 +1,6 @@
 const db = require('../db/connection')
 const format = require('pg')
-const { checkUsernameExists, checkArticleExists } = require('../db/seeds/utils')
+const { checkArticleHasComments } = require('../db/seeds/utils')
 
 exports.selectArticleID = (articleId) => {
 	let queryStr = `
@@ -18,6 +18,20 @@ exports.selectArticleID = (articleId) => {
 	})
 }
 
+exports.selectArticlesComment = (articleId) => {
+	if (articleId === 'teapot')
+		return Promise.reject({ status: 418, msg: "Hi, I'm just a tiny teapot!" })
+	let queryStr = `
+    SELECT comment_id, votes, created_at, author, body, article_id FROM comments
+    WHERE article_id = $1
+	ORDER BY created_at DESC
+	`
+	return checkArticleHasComments(articleId).then(() => {
+		return db.query(queryStr, [articleId]).then((result) => {
+			return result.rows
+		})
+	})
+}
 exports.selectArticles = () => {
 	// console.log("in model")
 	let queryStr = `
@@ -46,8 +60,6 @@ exports.addCommentByArticleID = (articleComment, articleID) => {
 			msg: 'Bad request: An username to attribute this comment is required',
 		})
 	}
-	// checkUsernameExists(username)
-	// checkArticleExists(articleID)
 
 	const queryParams = [username, body, articleID]
 	let queryStr = `INSERT INTO comments(author, body, article_id) VALUES ($1, $2, $3) RETURNING *;`

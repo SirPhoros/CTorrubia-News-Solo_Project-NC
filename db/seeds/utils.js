@@ -42,3 +42,17 @@ exports.formatComments = (comments, idLookup) => {
 // 			}
 // 		})
 // }
+exports.checkArticleHasComments = (articleID) => {
+	// If there is an articleID
+	return db
+		.query('SELECT * FROM articles WHERE article_id = $1', [articleID])
+		.then((result) => {
+			if (result.rows.length === 0 && articleID) {
+				return Promise.reject({
+					status: 404,
+					msg: 'No article found with that ID',
+				})
+			}
+			//Otherwise, let the function do its chores
+		})
+}
