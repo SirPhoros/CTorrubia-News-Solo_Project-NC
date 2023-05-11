@@ -361,17 +361,6 @@ describe('POST /api/articles/:article_id/comments', () => {
 	})
 })
 
-describe('ERROR 404 - Non valid endpoint', () => {
-	test('returns an error message if a non-valid endpoint is introduced', () => {
-		return request(app)
-			.get('/api/nonsense')
-			.expect(404)
-			.then(({ body }) => {
-				expect(body.msg).toBe('endpoint not found')
-			})
-	})
-})
-
 describe('DELETE /api/comments/:comment_id', () => {
 	test('DELETE - status: 204 - responds with right status code', () => {
 		return request(app).delete('/api/comments/1').expect(204)
@@ -556,6 +545,17 @@ describe('GET - /api/articles - Queries Handling', () => {
 			.expect(404)
 			.then(({ body }) => {
 				expect(body.msg).toBe('Article not found')
+			})
+	})
+})
+
+describe('ERROR 404 - Non valid endpoint', () => {
+	test('returns an error message if a non-valid endpoint is introduced', () => {
+		return request(app)
+			.get('/api/nonsense')
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('endpoint not found')
 			})
 	})
 })

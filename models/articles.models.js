@@ -55,6 +55,7 @@ exports.selectArticles = (sort_by, order, topic) => {
 	const queryValues = []
 	let queryStr = `SELECT articles.author, articles.title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(*)::INT as comment_count
 	FROM articles
+	
 	LEFT JOIN comments ON comments.article_id = articles.article_id `
 
 	if (topic) {
