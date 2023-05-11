@@ -242,6 +242,113 @@ describe('PATCH /api/articles/:article_id', () => {
 		return request(app)
 			.patch('/api/articles/nonsense')
 			.send({ inc_votes: -10 })
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Not valid type of input')
+			})
+	})
+})
+
+describe('POST /api/articles/:article_id/comments', () => {
+	test('POST - Status: 201 - responds with an object with required properties and sends back the posted comment', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				//First version of testing objects
+				expect(comment).toEqual(
+					expect.objectContaining({
+						author: expect.any(String),
+						body: expect.any(String),
+					})
+				)
+				//Second version of testing objects
+				expect(comment).toMatchObject({
+					comment_id: 19,
+					body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+					article_id: 1,
+					author: 'icellusedkars',
+					votes: 0,
+				})
+			})
+	})
+	test('POST - Status: 201 - responds with an object despite having unnecesarry properties', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+				nonsense: 10,
+			})
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				expect(comment).toEqual(expect.not.objectContaining({ nonsense: 10 }))
+			})
+	})
+
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'icellusedkars',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe(
+					'Bad request: The body of the comment is required'
+				)
+			})
+	})
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe(
+					'Bad request: An username to attribute this comment is required'
+				)
+			})
+	})
+
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'Demiurge',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('One of your parameters is not found')
+			})
+	})
+	test('POST - status 404 - returns error if article is not found', () => {
+		return request(app)
+			.post('/api/articles/10000/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(404)
+			.then(({ body }) => {
+				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error.
+				//Because it has the same code error as another error, I had to modify the response so it matches the need of both tests.
+				expect(body.msg).toBe('One of your parameters is not found')
+			})
+	})
+	test('POST - status 400 - returns error if the article_id is not a number', () => {
+		return request(app)
+			.post('/api/articles/nonsense/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
 			.expect(400)
 			.then(({ body }) => {
 				expect(body.msg).toBe('Bad request: Not valid type of input')
