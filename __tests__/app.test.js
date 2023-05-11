@@ -4,6 +4,7 @@ const data = require('../db/data/test-data')
 const db = require('../db/connection')
 const app = require('../app')
 const endpoints = require('../endpoints.json')
+const { expect } = require('@jest/globals')
 
 beforeEach(() => {
 	return seed(data)
@@ -139,8 +140,21 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(201)
 			.then(({ body: { comment } }) => {
-				expect(comment).toHaveProperty('author')
-				expect(comment).toHaveProperty('body')
+				//First version of testing objects
+				expect(comment).toEqual(
+					expect.objectContaining({
+						author: expect.any(String),
+						body: expect.any(String),
+					})
+				)
+				//Second version of testing objects
+				expect(comment).toMatchObject({
+					comment_id: 19,
+					body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+					article_id: 1,
+					author: 'icellusedkars',
+					votes: 0,
+				})
 			})
 	})
 	test('POST - Status: 201 - responds with an object despite having unnecesarry properties', () => {
@@ -153,11 +167,10 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(201)
 			.then(({ body: { comment } }) => {
-				expect(comment).not.toHaveProperty('nonsense')
+				expect(comment).toEqual(expect.not.objectContaining({ nonsense: 10 }))
 			})
 	})
 
-	///Expecting happy path as in the FrontEnd will be have boxes with "body" and "username", so nothing despite that will be able to be sent.
 	test('POST - Status: 404 - responds with an error if user not found', () => {
 		return request(app)
 			.post('/api/articles/1/comments')
@@ -206,8 +219,8 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(404)
 			.then(({ body }) => {
-
-				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error.
+				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error. 
+				//Because it has the same code error as another error, I had to modify the response so it matches the need of both tests. 
 				expect(body.msg).toBe('One of your parameters is not found')
 			})
 	})
