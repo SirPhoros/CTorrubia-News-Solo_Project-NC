@@ -422,7 +422,7 @@ describe('GET /api/articles', () => {
 				})
 			})
 	})
-	test('GET - status 200 - returns an array ordered by date, descending', () => {
+	test('GET - status 200 - returns an array sort_by: date (default), order: default (descending)', () => {
 		return request(app)
 			.get('/api/articles')
 			.expect(200)
@@ -435,18 +435,7 @@ describe('GET /api/articles', () => {
 	})
 })
 describe('GET - /api/articles - Queries Handling', () => {
-	test('GET - status 200 - returns an array sorted by date, ordered descending', () => {
-		return request(app)
-			.get('/api/articles')
-			.expect(200)
-			.then(({ body: { articles } }) => {
-				expect(articles).toBeSortedBy('created_at', {
-					descending: true,
-				})
-				expect(articles).not.toBeSortedBy('votes')
-			})
-	})
-	test('GET - status 200 - returns an array sort_by: author, order: default', () => {
+	test('GET - status 200 - returns an array sort_by: author, order: default (descending)', () => {
 		return request(app)
 			.get('/api/articles?sort_by=author')
 			.expect(200)
@@ -468,18 +457,7 @@ describe('GET - /api/articles - Queries Handling', () => {
 				expect(articles).not.toBeSortedBy('votes')
 			})
 	})
-	test('GET - status 200 - returns an array sort_by: votes, order: ascending', () => {
-		return request(app)
-			.get('/api/articles?sort_by=votes&order=asc')
-			.expect(200)
-			.then(({ body: { articles } }) => {
-				expect(articles).toBeSortedBy('votes', {
-					ascending: true,
-				})
-				expect(articles).not.toBeSortedBy('author')
-			})
-	})
-	test('GET - status 200 - returns an array sort_by: comment_count, order: ascending', () => {
+	test('GET - status 200 - returns an array sort_by: comment_count (aggregate function), order: ascending', () => {
 		return request(app)
 			.get('/api/articles?sort_by=comment_count&order=asc')
 			.expect(200)
@@ -501,7 +479,7 @@ describe('GET - /api/articles - Queries Handling', () => {
 				})
 			})
 	})
-	test('GET - status 200 - returns an array filter topic: cats', () => {
+	test('GET - status 200 - returns an array with multiple queries operating at once', () => {
 		return request(app)
 			.get('/api/articles?sort_by=article_id&order=asc&topic=mitch')
 			.expect(200)

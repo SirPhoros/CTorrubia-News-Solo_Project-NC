@@ -33,7 +33,7 @@ exports.selectArticlesComment = (articleId) => {
 	})
 }
 exports.selectArticles = (sort_by, order, topic) => {
-	//I'm excluding "article_img_url" as there is no point of sorting it by images.
+	//Excluding "article_img_url" as there is no point of sorting it by images.
 	const validSortQueries = [
 		'article_id',
 		'author',
@@ -65,9 +65,6 @@ exports.selectArticles = (sort_by, order, topic) => {
 
 	queryStr += `GROUP BY articles.article_id
 	ORDER BY ${sort_by} ${order};`
-
-	// console.log(queryStr)
-	// console.log(queryValues)
 
 	return db.query(queryStr, queryValues).then((result) => {
 		if (result.rows.length === 0) {
