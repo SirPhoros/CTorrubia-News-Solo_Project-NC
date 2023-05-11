@@ -211,20 +211,191 @@ describe('GET /api/users', () => {
 				expect(users.length).toBe(4)
 			})
 	})
+})
+test('GET - status 200 - returns an array containing the right type of data [username, name, avatar_url]', () => {
+	return request(app)
+		.get('/api/users')
+		.expect(200)
+		.then(({ body: { users } }) => {
+			users.forEach((user) => {
+				expect(user.hasOwnProperty('username'))
+				expect(typeof user.username).toBe('string')
+				expect(user.hasOwnProperty('name'))
+				expect(typeof user.name).toBe('string')
+				expect(user.hasOwnProperty('avatar_url'))
+				expect(typeof user.avatar_url).toBe('string')
+			})
+		})
+})
 
-	test('GET - status 200 - returns an array containing the right type of data [username, name, avatar_url]', () => {
+describe('PATCH /api/articles/:article_id', () => {
+	test('PATCH - status 202 - if no vote is send, returns the same vote', () => {
 		return request(app)
-			.get('/api/users')
-			.expect(200)
-			.then(({ body: { users } }) => {
-				users.forEach((user) => {
-					expect(user.hasOwnProperty('username'))
-					expect(typeof user.username).toBe('string')
-					expect(user.hasOwnProperty('name'))
-					expect(typeof user.name).toBe('string')
-					expect(user.hasOwnProperty('avatar_url'))
-					expect(typeof user.avatar_url).toBe('string')
+			.patch('/api/articles/1')
+			.send({ inc_votes: 0 })
+			.then(({ body: { article } }) => {
+				expect(article.votes).toBe(100)
+			})
+	})
+	test('PATCH - status 202 - if a number is sent, vote increments in that number', () => {
+		return request(app)
+			.patch('/api/articles/1')
+			.send({ inc_votes: 10 })
+			.expect(202)
+			.then(({ body: { article } }) => {
+				expect(article.votes).toBe(110)
+			})
+	})
+	test('PATCH - status 202 - if a negativenumber is sent, vote decrements in that number', () => {
+		return request(app)
+			.patch('/api/articles/1')
+			.send({ inc_votes: -10 })
+			.expect(202)
+			.then(({ body: { article } }) => {
+				expect(article.votes).toBe(90)
+			})
+	})
+	test('PATCH - status 404 - if an invalid ID is introduced.', () => {
+		return request(app)
+			.patch('/api/articles/100000')
+			.send({ inc_votes: 1 })
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Article not found')
+			})
+	})
+	test('PATCH - status 400 - if a invalid ID is inserted in the URL, an error is sent.', () => {
+		return request(app)
+			.patch('/api/articles/nonsense')
+			.send({ inc_votes: -10 })
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Not valid type of input')
+			})
+	})
+})
+
+describe('POST /api/articles/:article_id/comments', () => {
+	test('POST - Status: 201 - responds with an object with required properties and sends back the posted comment', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				//First version of testing objects
+				expect(comment).toEqual(
+					expect.objectContaining({
+						author: expect.any(String),
+						body: expect.any(String),
+					})
+				)
+				//Second version of testing objects
+				expect(comment).toMatchObject({
+					comment_id: 19,
+					body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+					article_id: 1,
+					author: 'icellusedkars',
+					votes: 0,
 				})
+			})
+	})
+	test('POST - Status: 201 - responds with an object despite having unnecesarry properties', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+				nonsense: 10,
+			})
+			.expect(201)
+			.then(({ body: { comment } }) => {
+				expect(comment).toEqual(expect.not.objectContaining({ nonsense: 10 }))
+			})
+	})
+
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'icellusedkars',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe(
+					'Bad request: The body of the comment is required'
+				)
+			})
+	})
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe(
+					'Bad request: An username to attribute this comment is required'
+				)
+			})
+	})
+
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/1/comments')
+			.send({
+				username: 'Demiurge',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('One of your parameters is not found')
+			})
+	})
+	test('POST - status 404 - returns error if article is not found', () => {
+		return request(app)
+			.post('/api/articles/10000/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(404)
+			.then(({ body }) => {
+				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error.
+				//Because it has the same code error as another error, I had to modify the response so it matches the need of both tests.
+				expect(body.msg).toBe('One of your parameters is not found')
+			})
+	})
+	test('POST - status 400 - returns error if the article_id is not a number', () => {
+		return request(app)
+			.post('/api/articles/nonsense/comments')
+			.send({
+				username: 'icellusedkars',
+				body: 'This is a test comment, I am existing briefly to prove the existence of this endpoint.',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Not valid type of input')
+			})
+	})
+	test('PATCH - status 400 - if a non-number is passed as the inc_votes value.', () => {
+		return request(app)
+			.patch('/api/articles/1')
+			.send({ inc_votes: 'number' })
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Introduce a whole number')
+			})
+	})
+	test('PATCH - status 400 - if user tries to update an invalid category, it returns an error.', () => {
+		return request(app)
+			.patch('/api/articles/1')
+			.send({ nonsense: 1 })
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Invalid category to be Updated')
 			})
 	})
 })
@@ -236,6 +407,38 @@ describe('ERROR 404 - Non valid endpoint', () => {
 			.expect(404)
 			.then(({ body }) => {
 				expect(body.msg).toBe('endpoint not found')
+			})
+	})
+})
+
+describe('DELETE /api/comments/:comment_id', () => {
+	test('DELETE - status: 204 - responds with right status code', () => {
+		return request(app).delete('/api/comments/1').expect(204)
+	})
+	test('DELETE - status: 400 - returns an error if user tries to insert a non-numerical (whole) ID', () => {
+		return request(app)
+			.delete('/api/comments/nonsense')
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Not valid type of input')
+			})
+	})
+	test('DELETE - status: 400 - returns an error if the ID is out of scope for the type of data', () => {
+		return request(app)
+			.delete('/api/comments/9999999999')
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe(
+					'Bad request: ID is out of range for type integer'
+				)
+			})
+	})
+	test('DELETE - status: 404 - returns an error if there is no comment with that ID', () => {
+		return request(app)
+			.delete('/api/comments/999')
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('No article found with that ID')
 			})
 	})
 })
