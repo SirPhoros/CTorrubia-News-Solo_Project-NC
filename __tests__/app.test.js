@@ -4,7 +4,6 @@ const data = require('../db/data/test-data')
 const db = require('../db/connection')
 const app = require('../app')
 const endpoints = require('../endpoints.json')
-const { expect } = require('@jest/globals')
 
 beforeEach(() => {
 	return seed(data)

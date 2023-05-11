@@ -25,16 +25,12 @@ app.post('/api/articles/:article_id/comments', postCommentByArticleID)
 app.all('*', (req, res) => {
 	res.status(404).send({ msg: 'endpoint not found' })
 })
+
+//PSQL ERRORS
 app.use((err, req, res, next) => {
 	if (err.code === '22P02') {
 		res.status(400).send({ msg: 'Bad request: Not valid type of input' })
-	} else {
-		next(err)
-	}
-})
-
-app.use((err, req, res, next) => {
-	if (err.code === '23503') {
+	} else if (err.code === '23503') {
 		//Key (article_id)=(10000) is not present in table "articles".
 		//'Key (author)=(Demiurge) is not present in table "users".
 		res.status(404).send({ msg: 'One of your parameters is not found' })
@@ -42,7 +38,8 @@ app.use((err, req, res, next) => {
 		next(err)
 	}
 })
-////Personalised Error
+
+////PERSONALISED ERRORS
 app.use((err, req, res, next) => {
 	if (err.status && err.msg) {
 		res.status(err.status).send({ msg: err.msg })
