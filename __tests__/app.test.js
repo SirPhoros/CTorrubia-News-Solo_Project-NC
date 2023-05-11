@@ -330,7 +330,7 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(404)
 			.then(({ body }) => {
-				expect(body.msg).toBe('One of your parameters is not found')
+				expect(body.msg).toBe('One of your parameters does not exist in our database')
 			})
 	})
 	test('POST - status 404 - returns error if article is not found', () => {
@@ -344,7 +344,7 @@ describe('POST /api/articles/:article_id/comments', () => {
 			.then(({ body }) => {
 				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error.
 				//Because it has the same code error as another error, I had to modify the response so it matches the need of both tests.
-				expect(body.msg).toBe('One of your parameters is not found')
+				expect(body.msg).toBe('One of your parameters does not exist in our database')
 			})
 	})
 	test('POST - status 400 - returns error if the article_id is not a number', () => {
@@ -526,7 +526,7 @@ describe('GET - /api/articles - Queries Handling', () => {
 			})
 	})
 })
-describe.only('POST /api/articles/', () => {
+describe('POST /api/articles/', () => {
 	test('POST - Status: 201 - responds with an object with required properties and sends back the posted article', () => {
 		return request(app)
 			.post('/api/articles/')
@@ -575,7 +575,7 @@ describe.only('POST /api/articles/', () => {
 			})
 	})
 
-	test('POST - Status: 404 - responds with an error if user not found', () => {
+	test('POST - Status: 404 - responds with an error if any part of the article is missing', () => {
 		return request(app)
 			.post('/api/articles/')
 			.send({
@@ -586,6 +586,23 @@ describe.only('POST /api/articles/', () => {
 			.expect(400)
 			.then(({ body }) => {
 				expect(body.msg).toBe('Bad request: Missing part(s) of the request')
+			})
+	})
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/')
+			.send({
+				title: 'Test article is my passion',
+				//TOPIC && AUTHOR are FOREIGN KEYS
+				topic: 'coding',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+			})
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe(
+					'One of your parameters does not exist in our database'
+				)
 			})
 	})
 })
