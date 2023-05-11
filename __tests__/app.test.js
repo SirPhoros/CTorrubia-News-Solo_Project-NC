@@ -202,6 +202,32 @@ describe('GET /api/articles', () => {
 	})
 })
 
+describe('GET /api/users', () => {
+	test('GET - status 200 - returns an array containing the right amount of data', () => {
+		return request(app)
+			.get('/api/users')
+			.expect(200)
+			.then(({ body: { users } }) => {
+				expect(users.length).toBe(4)
+			})
+	})
+})
+test('GET - status 200 - returns an array containing the right type of data [username, name, avatar_url]', () => {
+	return request(app)
+		.get('/api/users')
+		.expect(200)
+		.then(({ body: { users } }) => {
+			users.forEach((user) => {
+				expect(user.hasOwnProperty('username'))
+				expect(typeof user.username).toBe('string')
+				expect(user.hasOwnProperty('name'))
+				expect(typeof user.name).toBe('string')
+				expect(user.hasOwnProperty('avatar_url'))
+				expect(typeof user.avatar_url).toBe('string')
+			})
+		})
+})
+
 describe('PATCH /api/articles/:article_id', () => {
 	test('PATCH - status 202 - if no vote is send, returns the same vote', () => {
 		return request(app)
