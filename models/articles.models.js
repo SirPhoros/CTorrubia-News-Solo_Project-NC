@@ -2,11 +2,18 @@ const db = require('../db/connection')
 const format = require('pg')
 const { checkArticleHasComments } = require('../db/seeds/utils')
 
-exports.selectArticleID = (articleId) => {
+exports.selectArticleID = (articleId, count) => {
 	let queryStr = `
     SELECT * FROM articles
-    WHERE article_id = $1;
-    `
+	WHERE article_id = $1;`
+
+	if (count) {
+		queryStr = `SELECT articles.author, articles.title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(*)::INT as comment_count
+	FROM articles
+	LEFT JOIN comments ON comments.article_id = articles.article_id
+	WHERE articles.article_id = $1 GROUP BY articles.article_id;`
+	}
+
 	return db.query(queryStr, [articleId]).then((result) => {
 		if (result.rows.length === 0) {
 			return Promise.reject({
@@ -17,6 +24,7 @@ exports.selectArticleID = (articleId) => {
 		return result.rows
 	})
 }
+
 
 exports.selectArticlesComment = (articleId) => {
 	if (articleId === 'teapot')

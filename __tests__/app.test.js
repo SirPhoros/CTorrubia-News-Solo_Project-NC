@@ -85,7 +85,27 @@ describe('GET /api/articles/:article_id', () => {
 			})
 	})
 })
-
+describe('GET /api/articles/:article_id - Query Implementation', () => {
+	test('GET - status 200 - returns an article object of one article', () => {
+		return request(app)
+			.get('/api/articles/1')
+			.expect(200)
+			.then(({ body: { article } }) => {
+				expect(article.length).toBe(1)
+				expect(article.hasOwnProperty('comment_count')).toBe(false)
+			})
+	})
+	test('GET - status 200 - returns an article object of one article', () => {
+		return request(app)
+			.get('/api/articles/1?count=comments')
+			.expect(200)
+			.then(({ body: { article } }) => {
+				expect(article.length).toBe(1)
+				expect(article.hasOwnProperty('comment_count'))
+				expect(typeof article[0].comment_count).toBe('number')
+			})
+	})
+})
 describe('GET /api/articles/:article_id/comments', () => {
 	test('GET - status 200 - returns an article object of one article', () => {
 		return request(app)
