@@ -189,6 +189,49 @@ describe('GET /api/users', () => {
 	})
 })
 
+describe('GET /api/users/:username', () => {
+	test('GET - status 200 - returns an user object that matches the username', () => {
+		return request(app)
+			.get('/api/users/butter_bridge')
+			.expect(200)
+			.then(({ body: { user } }) => {
+				expect(user.length).toBe(1)
+			})
+	})
+	test('GET - status 200 - returns an article object containing the right type of data [username, user, avatar_url]', () => {
+		return request(app)
+			.get('/api/users/butter_bridge')
+			.expect(200)
+			.then(({ body: { user } }) => {
+				//First version of testing objects
+				expect(user[0]).toEqual(
+					expect.objectContaining({
+						username: expect.any(String),
+						name: expect.any(String),
+						avatar_url: expect.any(String),
+					})
+				)
+				//Second version of testing objects
+				expect(user[0]).toMatchObject({
+					username: 'butter_bridge',
+					name: 'jonny',
+					avatar_url:
+						'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg',
+				})
+			})
+	})
+	//Only we will get Error 404, as anything passed as req.params will be treated as string. 
+	//Future Feature: limit with a REGEX what elements can have -->> it will send a 400.
+	test('GET - status 404 - returns error if user is not found', () => {
+		return request(app)
+			.get('/api/users/demiurge')
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('No user found with that username')
+			})
+	})
+})
+
 describe('PATCH /api/articles/:article_id', () => {
 	test('PATCH - status 202 - if no vote is send, returns the same vote', () => {
 		return request(app)
