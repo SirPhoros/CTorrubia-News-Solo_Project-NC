@@ -23,6 +23,25 @@ exports.formatComments = (comments, idLookup) => {
 	})
 }
 
+// exports.checkUsernameExists = (username) => {
+// 	return db
+// 		.query('SELECT * FROM users WHERE username = $1', [username])
+// 		.then((result) => {
+// 			if (result.rows.length === 0 && username) {
+// 				return Promise.reject({ status: 404, msg: 'User not found' })
+// 			}
+// 		})
+// }
+
+// exports.checkArticleExists = (articleID) => {
+// 	return db
+// 		.query('SELECT * FROM articles WHERE article_id = $1', [articleID])
+// 		.then((result) => {
+// 			if (result.rows.length === 0 && articleID) {
+// 				return Promise.reject({ status: 404, msg: 'Invalid ID' })
+// 			}
+// 		})
+// }
 exports.checkArticleHasComments = (articleID) => {
 	// If there is an articleID
 	return db
