@@ -392,6 +392,70 @@ describe('DELETE /api/comments/:comment_id', () => {
 			})
 	})
 })
+describe('PATCH /api/comments/:comment_id', () => {
+	test('PATCH - status 202 - if no vote is send, returns the same vote', () => {
+		return request(app)
+			.patch('/api/comments/1')
+			.send({ inc_votes: 0 })
+			.then(({ body: { comment } }) => {
+				expect(comment.votes).toBe(16)
+			})
+	})
+	test('PATCH - status 202 - if a number is sent, vote increments in that number', () => {
+		return request(app)
+			.patch('/api/comments/1')
+			.send({ inc_votes: 10 })
+			.expect(202)
+			.then(({ body: { comment } }) => {
+				expect(comment.votes).toBe(26)
+			})
+	})
+	test('PATCH - status 202 - if a negative number is sent, vote decrements in that number', () => {
+		return request(app)
+			.patch('/api/comments/1')
+			.send({ inc_votes: -10 })
+			.expect(202)
+			.then(({ body: { comment } }) => {
+				expect(comment.votes).toBe(6)
+			})
+	})
+	test('PATCH - status 404 - if an invalid ID is introduced.', () => {
+		return request(app)
+			.patch('/api/comments/100000')
+			.send({ inc_votes: 1 })
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Comment not found')
+			})
+	})
+	test('PATCH - status 400 - if a invalid ID is inserted in the URL, an error is sent.', () => {
+		return request(app)
+			.patch('/api/comments/nonsense')
+			.send({ inc_votes: -10 })
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Not valid type of input')
+			})
+	})
+	test('PATCH - status 400 - if a non-number is passed as the inc_votes value.', () => {
+		return request(app)
+			.patch('/api/comments/1')
+			.send({ inc_votes: 'number' })
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Introduce a whole number')
+			})
+	})
+	test('PATCH - status 400 - if user tries to update an invalid category, it returns an error.', () => {
+		return request(app)
+			.patch('/api/comments/1')
+			.send({ nonsense: 1 })
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Invalid category to be Updated')
+			})
+	})
+})
+
 describe('GET /api/articles', () => {
 	test('GET - status 200 - returns an array containing the right type of data [author, title, article_id, topic, created_at, votes, article_img_url, comment_count] of the right type', () => {
 		return request(app)

@@ -6,7 +6,10 @@ const {
 	postCommentByArticleID,
 	patchArticle,
 } = require('./controllers/articles.controller')
-const { deleteComment } = require('./controllers/comments.controller')
+const {
+	deleteComment,
+	patchComment,
+} = require('./controllers/comments.controller')
 const { getTopics } = require('./controllers/topics.controllers')
 
 const express = require('express')
@@ -33,6 +36,7 @@ app.get('/api/users', getUsers)
 
 //COMMENTS
 app.delete('/api/comments/:comment_id', deleteComment)
+app.patch('/api/comments/:comment_id', patchComment)
 
 //ERROR HANDLING
 ////PSQL errors
