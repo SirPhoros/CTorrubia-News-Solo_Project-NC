@@ -37,6 +37,7 @@ exports.getArticle = (req, res, next) => {
 		})
 }
 
+
 exports.patchArticle = (req, res, next) => {
 	const articleID = req.params.article_id
 	const newVote = req.body.inc_votes
