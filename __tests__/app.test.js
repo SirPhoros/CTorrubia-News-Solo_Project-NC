@@ -202,6 +202,52 @@ describe('GET /api/articles', () => {
 	})
 })
 
+describe('PATCH /api/articles/:article_id', () => {
+	test('PATCH - status 202 - if no vote is send, returns the same vote', () => {
+		return request(app)
+			.patch('/api/articles/1')
+			.send({ inc_votes: 0 })
+			.then(({ body: { article } }) => {
+				expect(article.votes).toBe(100)
+			})
+	})
+	test('PATCH - status 202 - if a number is sent, vote increments in that number', () => {
+		return request(app)
+			.patch('/api/articles/1')
+			.send({ inc_votes: 10 })
+			.expect(202)
+			.then(({ body: { article } }) => {
+				expect(article.votes).toBe(110)
+			})
+	})
+	test('PATCH - status 202 - if a negativenumber is sent, vote decrements in that number', () => {
+		return request(app)
+			.patch('/api/articles/1')
+			.send({ inc_votes: -10 })
+			.expect(202)
+			.then(({ body: { article } }) => {
+				expect(article.votes).toBe(90)
+			})
+	})
+	test('PATCH - status 404 - if an invalid ID is introduced.', () => {
+		return request(app)
+			.patch('/api/articles/100000')
+			.send({ inc_votes: 1 })
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Article not found')
+			})
+	})
+	test('PATCH - status 400 - if a invalid ID is inserted in the URL, an error is sent.', () => {
+		return request(app)
+			.patch('/api/articles/nonsense')
+			.send({ inc_votes: -10 })
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Not valid type of input')
+			})
+	})
+})
+
 describe('POST /api/articles/:article_id/comments', () => {
 	test('POST - Status: 201 - responds with an object with required properties and sends back the posted comment', () => {
 		return request(app)
@@ -291,8 +337,8 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(404)
 			.then(({ body }) => {
-				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error. 
-				//Because it has the same code error as another error, I had to modify the response so it matches the need of both tests. 
+				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error.
+				//Because it has the same code error as another error, I had to modify the response so it matches the need of both tests.
 				expect(body.msg).toBe('One of your parameters is not found')
 			})
 	})
@@ -306,6 +352,24 @@ describe('POST /api/articles/:article_id/comments', () => {
 			.expect(400)
 			.then(({ body }) => {
 				expect(body.msg).toBe('Bad request: Not valid type of input')
+			})
+	})
+	test('PATCH - status 400 - if a non-number is passed as the inc_votes value.', () => {
+		return request(app)
+			.patch('/api/articles/1')
+			.send({ inc_votes: 'number' })
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Introduce a whole number')
+			})
+	})
+	test('PATCH - status 400 - if user tries to update an invalid category, it returns an error.', () => {
+		return request(app)
+			.patch('/api/articles/1')
+			.send({ nonsense: 1 })
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Invalid category to be Updated')
 			})
 	})
 })
