@@ -28,7 +28,8 @@ exports.getArticlesComment = (req, res, next) => {
 		})
 }
 exports.getArticle = (req, res, next) => {
-	selectArticles()
+	let { sort_by = 'created_at', order = 'desc', topic } = req.query
+	selectArticles(sort_by, order, topic)
 		.then((articles) => {
 			res.status(200).send({ articles: articles })
 		})
@@ -36,7 +37,6 @@ exports.getArticle = (req, res, next) => {
 			next(err)
 		})
 }
-
 
 exports.patchArticle = (req, res, next) => {
 	const articleID = req.params.article_id
