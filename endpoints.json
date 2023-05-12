@@ -11,7 +11,7 @@
 	},
 	"GET /api/articles/:article_id": {
 		"description": "serves an array of the selected article by given article_id",
-		"queries": ["article_id"],
+		"queries": ["article_id", "limit", "p"],
 		"exampleResponse": {
 			"article": [
 				{
@@ -73,7 +73,7 @@
 	},
 	"GET /api/articles/:article_id/comments": {
 		"description": "serves an array of all comments for given article_id",
-		"queries": ["article_id"],
+		"queries": ["article_id", "limit", "p"],
 		"exampleReponse": {
 			"comments": [
 				{

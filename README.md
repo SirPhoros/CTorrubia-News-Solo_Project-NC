@@ -80,6 +80,7 @@ $ npm run dev
 ### `GET /api/articles`
 
 - Retrieves a list of articles
+- Can paginate by means of `limit` and `p` (page)
 
 ### `GET /api/articles/:article_id`
 
@@ -97,6 +98,7 @@ $ npm run dev
 ### `GET /api/articles/:article_id/comments`
 
 - Retrieves a list of comments associated with the given `article_id`
+- Can paginate by means of `limit` and `p` (page)
 
 ### `POST /api/articles/:article_id/comments`
 
