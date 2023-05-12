@@ -7,6 +7,8 @@
 The database used was PSQL, and interactions have been carried out using node-postgres.
 
 > A live version can be accessed here: https://nc-news-soloproject-be.onrender.com/
+>
+> If the data is appearing on one line, it can be hard to read. You may find it easier to read by installing a JSON Formatter extension to your browser. We recommend [this one](https://chrome.google.com/webstore/detail/json-formatter/bcjindcccaagfpapjjmafapmmgkkhgoa?hl=en) for Chrome. In Firefox it shouldn't be a problem.
 
 Written by [Cristóbal G. Torrubia](https://github.com/SirPhoros). Latest version 1.0.0 (12 May 2023).
 
