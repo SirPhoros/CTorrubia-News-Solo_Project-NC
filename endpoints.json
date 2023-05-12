@@ -27,7 +27,7 @@
 			]
 		}
 	},
-	"GET /api/articles/:article_id": {
+	"GET /api/users/:username": {
 		"description": "serves an array of the selected article by given article_id",
 		"queries": ["username"],
 		"exampleResponse": {
@@ -172,7 +172,6 @@
 			]
 		}
 	},
-
 	"DELETE /api/comments/:comment_id": {
 		"description": "deletes comment for given comment_id, returning 204 no content",
 		"queries": ["comment_id"]
