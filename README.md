@@ -140,7 +140,6 @@ $ npm run dev
 ```
             {
 				title: 'Test article is my passion',
-				//TOPIC && AUTHOR are FOREIGN KEYS
 				topic: 'mitch',
 				author: 'butter_bridge',
 				body: 'This is a test article. My mere existence is reduced to a test',
