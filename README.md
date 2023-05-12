@@ -174,4 +174,4 @@ $ npm run dev
 
 ---
 
-Copyright (c) 2023
+Copyright (c) 2023 - [Cristóbal Gutiérrez Torrubia](https://www.linkedin.com/in/cgtorrubia/)
