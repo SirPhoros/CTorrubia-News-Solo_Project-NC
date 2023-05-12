@@ -220,7 +220,7 @@ describe('GET /api/users/:username', () => {
 				})
 			})
 	})
-	//Only we will get Error 404, as anything passed as req.params will be treated as string. 
+	//Only we will get Error 404, as anything passed as req.params will be treated as string.
 	//Future Feature: limit with a REGEX what elements can have -->> it will send a 400.
 	test('GET - status 404 - returns error if user is not found', () => {
 		return request(app)
@@ -373,7 +373,9 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(404)
 			.then(({ body }) => {
-				expect(body.msg).toBe('One of your parameters does not exist in our database')
+				expect(body.msg).toBe(
+					'One of your parameters does not exist in our database'
+				)
 			})
 	})
 	test('POST - status 404 - returns error if article is not found', () => {
@@ -387,7 +389,9 @@ describe('POST /api/articles/:article_id/comments', () => {
 			.then(({ body }) => {
 				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error.
 				//Because it has the same code error as another error, I had to modify the response so it matches the need of both tests.
-				expect(body.msg).toBe('One of your parameters does not exist in our database')
+				expect(body.msg).toBe(
+					'One of your parameters does not exist in our database'
+				)
 			})
 	})
 	test('POST - status 400 - returns error if the article_id is not a number', () => {
@@ -710,6 +714,17 @@ describe('POST /api/articles/', () => {
 				expect(body.msg).toBe(
 					'One of your parameters does not exist in our database'
 				)
+			})
+	})
+})
+
+describe('GET - initial endpoint', () => {
+	test('returns intructions for the initiation of the server', () => {
+		return request(app)
+			.get('/')
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.msg).toBe('All OK. The server is up and running. To have access to a list of available endpoints, access "/api')
 			})
 	})
 })
