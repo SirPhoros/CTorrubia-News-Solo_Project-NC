@@ -54,7 +54,7 @@ The databases can now be accessed via `psql`.
 To run the provided test suite:
 
 ```
-$ npm t 
+$ npm t
 ```
 
 To run the dev environment:
@@ -115,7 +115,7 @@ $ npm run dev
 
 ### `GET /api/users/:username`
 
-- Retrieves an individual user object `
+- Retrieves an individual user object
 - `:username` must be valid and exist
 - Example response body:
 
@@ -127,6 +127,49 @@ $ npm run dev
 		"name": "Jess Jelly"
 	}
 }
+```
+
+### `POST /api/article`
+
+- Adds an article to the databased
+- `author` and `topic` must be valid and exist
+- Example request body:
+
+```
+            {
+				title: 'Test article is my passion',
+				//TOPIC && AUTHOR are FOREIGN KEYS
+				topic: 'mitch',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+				article_img_url:
+					'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+			}
+```
+
+- Example response body:
+
+```
+{
+      article_id: 13,
+      title: 'Test article is my passion',
+      topic: 'mitch',
+      author: 'butter_bridge',
+      body: 'This is a test article. My mere existence is reduced to a test',
+      created_at: '2023-05-12T12:31:32.428Z',
+      votes: 0,
+      article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+      comment_count: 0
+    }
+```
+
+### `PATCH  /api/comments/:comment_id`
+
+- Increments the comments's `votes` property by the `inc_votes` property in the request body
+- Example request body:
+
+```
+{ inc_votes: 1 }
 ```
 
 ---

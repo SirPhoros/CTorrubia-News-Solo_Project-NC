@@ -19,14 +19,6 @@ const app = express()
 
 app.use(express.json())
 
-app.get('/', (req, res) => {
-	res
-		.status(200)
-		.send(
-			'All OK. The server is up and running. To have access to a list of available endpoints, access "/api'
-		)
-})
-
 //TOPICS
 app.get('/api/topics', getTopics)
 
@@ -34,11 +26,12 @@ app.get('/api/topics', getTopics)
 app.get('/api', getAPI)
 
 //ARTICLES
-app.get('/api/articles/:article_id', getArticleId)
-app.get('/api/articles/:article_id/comments', getArticlesComment)
 app.get('/api/articles/', getArticle)
 app.post('/api/articles', postArticle)
+
+app.get('/api/articles/:article_id', getArticleId)
 app.patch('/api/articles/:article_id', patchArticle)
+app.get('/api/articles/:article_id/comments', getArticlesComment)
 app.post('/api/articles/:article_id/comments', postCommentByArticleID)
 
 //USERS
