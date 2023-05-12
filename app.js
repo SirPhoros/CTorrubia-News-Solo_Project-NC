@@ -19,6 +19,14 @@ const app = express()
 
 app.use(express.json())
 
+app.get('/', (req, res) => {
+	res
+		.status(200)
+		.send(
+			'All OK. The server is up and running. To have access to a list of available endpoints, access "/api'
+		)
+})
+
 //TOPICS
 app.get('/api/topics', getTopics)
 
