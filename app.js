@@ -1,20 +1,5 @@
-const { getAPI } = require('./controllers/api.controller')
-const {
-	getArticleId,
-	getArticle,
-	getArticlesComment,
-	postCommentByArticleID,
-	patchArticle,
-	postArticle,
-} = require('./controllers/articles.controller')
-const {
-	deleteComment,
-	patchComment,
-} = require('./controllers/comments.controller')
-const { getTopics } = require('./controllers/topics.controllers')
-
 const express = require('express')
-const { getUsers, getUsername } = require('./controllers/users.controllers')
+const apiRouter = require('./routes/api-router')
 const app = express()
 
 app.use(express.json())
@@ -22,32 +7,11 @@ app.use(express.json())
 app.get('/', (req, res) => {
 	res
 		.status(200)
-		.send(
-			'All OK. The server is up and running. To have access to a list of available endpoints, access "/api'
-		)
+		.send({
+			msg: 'All OK. The server is up and running. To have access to a list of available endpoints, access "/api',
+		})
 })
-
-//TOPICS
-app.get('/api/topics', getTopics)
-
-//API
-app.get('/api', getAPI)
-
-//ARTICLES
-app.get('/api/articles/:article_id', getArticleId)
-app.get('/api/articles/:article_id/comments', getArticlesComment)
-app.get('/api/articles/', getArticle)
-app.post('/api/articles', postArticle)
-app.patch('/api/articles/:article_id', patchArticle)
-app.post('/api/articles/:article_id/comments', postCommentByArticleID)
-
-//USERS
-app.get('/api/users', getUsers)
-app.get('/api/users/:username', getUsername)
-
-//COMMENTS
-app.delete('/api/comments/:comment_id', deleteComment)
-app.patch('/api/comments/:comment_id', patchComment)
+app.use('/api', apiRouter)
 
 //ERROR HANDLING
 ////PSQL errors

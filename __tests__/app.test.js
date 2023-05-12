@@ -738,6 +738,17 @@ describe('POST /api/articles/', () => {
 	})
 })
 
+describe('GET - initial endpoint', () => {
+	test('returns intructions for the initiation of the server', () => {
+		return request(app)
+			.get('/')
+			.expect(200)
+			.then(({ body }) => {
+				expect(body.msg).toBe('All OK. The server is up and running. To have access to a list of available endpoints, access "/api')
+			})
+	})
+})
+
 describe('ERROR 404 - Non valid endpoint', () => {
 	test('returns an error message if a non-valid endpoint is introduced', () => {
 		return request(app)
