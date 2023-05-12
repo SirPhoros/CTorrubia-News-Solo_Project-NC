@@ -9,7 +9,8 @@ const {
 
 exports.getArticleId = (req, res, next) => {
 	const articleId = req.params.article_id
-	selectArticleID(articleId)
+	const { count } = req.query
+	selectArticleID(articleId, count)
 		.then((article) => {
 			res.status(200).send({ article: article })
 		})
