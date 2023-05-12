@@ -657,6 +657,56 @@ describe('GET - /api/articles - Queries Handling', () => {
 			})
 	})
 })
+describe.only('GET - /api/articles - Pagination', () => {
+	test('GET - status 200 - returns an array with the pagination in default settings (a page of 10 items)', () => {
+		return request(app)
+			.get('/api/articles')
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles.length).toBe(10)
+			})
+	})
+	test('GET - status 200 - returns an array with the pagination in personalised settings (a page of 12 items)', () => {
+		return request(app)
+			.get('/api/articles?limit=12')
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles.length).toBe(12)
+			})
+	})
+	test('GET - status 200 - returns maximun the element even if it smaller than the limit', () => {
+		return request(app)
+			.get('/api/articles?limit=50')
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles.length).toBe(12)
+			})
+	})
+	test('GET - status 200 - returns an array with the pagination in default settings, second page', () => {
+		return request(app)
+			.get('/api/articles?p=2')
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles.length).toBe(2)
+			})
+	})
+	test('GET - status 200 - returns an array with the pagination in personalised settings, third page', () => {
+		return request(app)
+			.get('/api/articles?limit=3&p=3')
+			.expect(200)
+			.then(({ body: { articles } }) => {
+				expect(articles.length).toBe(3)
+			})
+	})
+	test('GET - status 404 - returns an error if the user tries to navigate an empty page (excession of elements) ', () => {
+		return request(app)
+			.get('/api/articles?limit=6&p=3')
+			.expect(404)
+			.then(({ body: { msg } }) => {
+				expect(msg).toBe('Article not found')
+			})
+	})
+})
 describe('POST /api/articles/', () => {
 	test('POST - Status: 201 - responds with an object with required properties and sends back the posted article', () => {
 		return request(app)
@@ -744,7 +794,9 @@ describe('GET - initial endpoint', () => {
 			.get('/')
 			.expect(200)
 			.then(({ body }) => {
-				expect(body.msg).toBe('All OK. The server is up and running. To have access to a list of available endpoints, access "/api')
+				expect(body.msg).toBe(
+					'All OK. The server is up and running. To have access to a list of available endpoints, access "/api'
+				)
 			})
 	})
 })
