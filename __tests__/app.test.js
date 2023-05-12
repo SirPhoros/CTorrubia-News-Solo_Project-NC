@@ -330,7 +330,7 @@ describe('POST /api/articles/:article_id/comments', () => {
 			})
 			.expect(404)
 			.then(({ body }) => {
-				expect(body.msg).toBe('One of your parameters is not found')
+				expect(body.msg).toBe('One of your parameters does not exist in our database')
 			})
 	})
 	test('POST - status 404 - returns error if article is not found', () => {
@@ -344,7 +344,7 @@ describe('POST /api/articles/:article_id/comments', () => {
 			.then(({ body }) => {
 				//Goes to the app.all as it tries to post access to /articles/10000/comments but as said article does not exist, it will trigger that error.
 				//Because it has the same code error as another error, I had to modify the response so it matches the need of both tests.
-				expect(body.msg).toBe('One of your parameters is not found')
+				expect(body.msg).toBe('One of your parameters does not exist in our database')
 			})
 	})
 	test('POST - status 400 - returns error if the article_id is not a number', () => {
@@ -587,6 +587,86 @@ describe('GET - /api/articles - Queries Handling', () => {
 			.expect(404)
 			.then(({ body }) => {
 				expect(body.msg).toBe('Article not found')
+			})
+	})
+})
+describe('POST /api/articles/', () => {
+	test('POST - Status: 201 - responds with an object with required properties and sends back the posted article', () => {
+		return request(app)
+			.post('/api/articles/')
+			.send({
+				title: 'Test article is my passion',
+				//TOPIC && AUTHOR are FOREIGN KEYS
+				topic: 'mitch',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+				article_img_url:
+					'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+			})
+			.expect(201)
+			.then(({ body: { article } }) => {
+				//First version of testing objects
+				expect(article).toEqual(
+					expect.objectContaining({
+						author: expect.any(String),
+						title: expect.any(String),
+						body: expect.any(String),
+						topic: expect.any(String),
+						article_img_url: expect.any(String),
+						article_id: expect.any(Number),
+						votes: expect.any(Number),
+						created_at: expect.any(String),
+						//comment_count should be 0 as it is a brand new article, then this count won't stay in the table unless called it through previous "GET /api/articles"
+						comment_count: expect.any(Number),
+					})
+				)
+			})
+	})
+	test('POST - Status: 201 - responds with an object despite having unnecesarry properties', () => {
+		return request(app)
+			.post('/api/articles/')
+			.send({
+				title: 'Test article is my passion',
+				//TOPIC && AUTHOR are FOREIGN KEYS
+				topic: 'mitch',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+				nonsense: 10,
+			})
+			.expect(201)
+			.then(({ body: { article } }) => {
+				expect(article).toEqual(expect.not.objectContaining({ nonsense: 10 }))
+			})
+	})
+
+	test('POST - Status: 404 - responds with an error if any part of the article is missing', () => {
+		return request(app)
+			.post('/api/articles/')
+			.send({
+				topic: 'mitch',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+			})
+			.expect(400)
+			.then(({ body }) => {
+				expect(body.msg).toBe('Bad request: Missing part(s) of the request')
+			})
+	})
+	test('POST - Status: 404 - responds with an error if user not found', () => {
+		return request(app)
+			.post('/api/articles/')
+			.send({
+				title: 'Test article is my passion',
+				//TOPIC && AUTHOR are FOREIGN KEYS
+				topic: 'coding',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+			})
+			.expect(404)
+			.then(({ body }) => {
+				expect(body.msg).toBe(
+					'One of your parameters does not exist in our database'
+				)
 			})
 	})
 })

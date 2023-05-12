@@ -5,6 +5,7 @@ const {
 	getArticlesComment,
 	postCommentByArticleID,
 	patchArticle,
+	postArticle,
 } = require('./controllers/articles.controller')
 const {
 	deleteComment,
@@ -28,6 +29,7 @@ app.get('/api', getAPI)
 app.get('/api/articles/:article_id', getArticleId)
 app.get('/api/articles/:article_id/comments', getArticlesComment)
 app.get('/api/articles/', getArticle)
+app.post('/api/articles', postArticle)
 app.patch('/api/articles/:article_id', patchArticle)
 app.post('/api/articles/:article_id/comments', postCommentByArticleID)
 
@@ -61,7 +63,9 @@ app.use((err, req, res, next) => {
 	} else if (err.code === '23503') {
 		//Key (article_id)=(10000) is not present in table "articles".
 		//'Key (author)=(Demiurge) is not present in table "users".
-		res.status(404).send({ msg: 'One of your parameters is not found' })
+		res
+			.status(404)
+			.send({ msg: 'One of your parameters does not exist in our database' })
 	} else {
 		next(err)
 	}

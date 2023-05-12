@@ -122,15 +122,42 @@ exports.addCommentByArticleID = (articleComment, articleID) => {
 			})
 		return result.rows[0]
 	})
-	// console.log(
-	// )
-	// return db
-	// 	.query(queryStr, [articleComment.username, articleComment.body, articleID])
-	// 	.then((result) => {
-	// 		console.log(result)
-	// 		// if (result.rows.length === 0) {
-	// 		// 	return Promise.reject({ status: 404, msg: 'Article not found' })
-	// 		// }
-	// 		return result.rows[0]
-	// 	})
+}
+exports.addArticle = (newArticle) => {
+	const {
+		author,
+		title,
+		body,
+		topic,
+		article_img_url = 'placeholder',
+	} = newArticle
+
+	if (!author || !title || !body || !topic) {
+		return Promise.reject({
+			status: 400,
+			msg: 'Bad request: Missing part(s) of the request',
+		})
+	}
+
+	const arrBody = [author, title, body, topic, article_img_url]
+	let queryStr = `INSERT INTO articles (author, title, body, topic, article_img_url)
+	VALUES ($1, $2, $3, $4, $5)
+	RETURNING *, 0 AS comment_count;
+	;
+	`
+
+	// `INSERT INTO articles (author, title, body, topic, article_img_url, comment_count)
+	// VALUES ($1, $2, $3, $4, $5, 0)
+	// RETURNING *;
+	// `
+
+	/*`INSERT INTO articles (author, title, body, topic, article_img_url, comment_count)
+		SELECT $1, $2, $3, $4, $5, COUNT(*)::INT 
+		FROM articles 
+		LEFT JOIN comments ON comments.article_id = articles.article_id
+		GROUP BY articles.article_id
+		RETURNING *;`
+*/
+
+	return db.query(queryStr, arrBody).then((result) => result.rows[0])
 }
