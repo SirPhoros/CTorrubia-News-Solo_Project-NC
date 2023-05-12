@@ -1,46 +1,177 @@
-# CTORRUBIA - SoloProject - Northcoders News API
+# CTORRUBIA - Northcoders News API
 
 ## Background
 
-This repo contains the back-end solo project proposed by the Nortcoders Full-Stack bootcamp. In the project, I will make use of my knowledge with back-end tools, using NODE.js, Express and PSQL as main rules, and testing according to the TDD rules. The project will be complemented with a Front-End project, by the end of the course, granting then with a Back-End and a Front-End version of the project.
+**CTORRUBIA - Northcoders News API** is a [node-postgres](https://node-postgres.com/) back-end API for a Reddit-style news website. The intention here was to mimic the building of a real world backend service (such as reddit) which will provide this information to the front end architecture.
 
-The project consists on the building of an API for the purpose of accessing application data programatically. Thus, the intention of this is to mimic the building of a real world backend service (such as reddit), which should latter on provide the information to the front end architecture.
+The database used was PSQL, and interactions have been carried out using node-postgres.
 
-## Hosted version of the Project
+> A live version can be accessed here: https://nc-news-soloproject-be.onrender.com/
 
-TBC
+Written by [Cristóbal G. Torrubia](https://github.com/SirPhoros). Latest version 1.0.0 (12 May 2023).
 
-## Set-up
+This project has been part of the Northcoders bootcamp, 27th March 2023 - 23rd June 2023.
 
-If you want to use it and test this project yourself, you need to start by:
+---
 
-1. Fork this repository to your own GitHub account because you will be pushing your own solutions to it.
+## Set-up guide
 
-2. Clone your fork of this repository to your local machine and `cd` into it:
+### 1. Install dependencies
 
 ```
-$ git clone <your fork's URL>
-$ cd be-nc-news-CGT
+$ npm i
+$ npm i -D jest
+$ npm i -D jest-sorted
 ```
 
-3. Make sure you've navigated into the folder and install all dependencies using `npm install`. You also have access to an npm script to run tests (`npm test`).
+At a minimum, [Node.js v19.7.0](https://nodejs.org/en/download/) and [PostgreSQL 14.7](https://www.postgresql.org/download/) are required. Postgres will be installed with the command above.
 
-If you as an user want to have a look to this project, you will first need to set-up your folder once you have cloned it. To do so:
-You will need to create two .env files for your project: `.env.test` and `.env.development.` Into each, add `PGDATABASE=<database_name_here>`, with the correct database name for that environment (see /db/setup.sql for the database names). Double check that these `.env files` are `.gitignored` (you could use `.env.*` to englobe both .env files in the same ignore).
+### 2. Set environment variables
 
-4. Once you have configured the .env files, you are ready to seed database. To do so, you can check `package.json`, in which you will find the scripts `setup-dbs` and `seed`, in order to use them, type `npm run <script-name>` in your console.
+Create two `.env` files, `.env.development` and `.env.test`, which should read respectively:
+
+```
+PGDATABASE=nc_news
+```
+
+```
+PGDATABASE=nc_news_test
+```
+
+### 3. Set-up and seed the databases
 
 ```
 $ npm run setup-dbs
 $ npm run seed
 ```
 
-Once you have done it, you are ready to go. You also have access to an npm script to run tests (`npm test`).
+The databases can now be accessed via `psql`.
 
-## Minimum Requirements
+---
 
-This project has been realised with the versions of *Node.js* `v19.7.0`, *Postgres* `PostgreSQL 14.7`
+## Testing
 
-Along with that, the project has been done with the help of the packages `dotenv`, `express` & `pg`; and if you want to use the tests provided by the project, you will need to install in your devDependencies `supertest` and `jest-sorted`. 
+To run the provided test suite:
 
-Hint: Remember that you'll need create a .env.development file (use the example.env as a template) and then run the setup.sql file to create the databases firstTo install a package in your *devDependencies* type in your console `npm install -d <name-of-package>`.
+```
+$ npm t
+```
+
+To run the dev environment:
+
+```
+$ npm run dev
+```
+
+---
+
+## Available endpoints
+
+### `GET /api/`
+
+- Retrieves a JSON object of available endpoints in the API
+
+### `GET /api/topics`
+
+- Retrieves a list of topics
+
+### `GET /api/articles`
+
+- Retrieves a list of articles
+
+### `GET /api/articles/:article_id`
+
+- Retrieves an individual article, along with the number of comments associated with it
+
+### `PATCH /api/articles/:article_id`
+
+- Increments the article's `votes` property by the `inc_votes` property in the request body
+- Example request body:
+
+```
+{ inc_votes: 1 }
+```
+
+### `GET /api/articles/:article_id/comments`
+
+- Retrieves a list of comments associated with the given `article_id`
+
+### `POST /api/articles/:article_id/comments`
+
+- Adds a comment to the database, associated with the given `article_id`
+- Example request body:
+
+```
+{ username: "jessjelly", body: "I love this site!" };
+```
+
+### `DELETE /api/comments/:comment_id`
+
+- Deletes the specified comment from the database
+
+### `GET /api/users`
+
+- Retrieves a list of users currently registered to the site.`
+
+### `GET /api/users/:username`
+
+- Retrieves an individual user object
+- `:username` must be valid and exist
+- Example response body:
+
+```
+{
+	"user": {
+		"username": "jessjelly",
+		"avatar_url": "https://vignette.wikia.nocookie.net/mrmen/images/4/4f/MR_JELLY_4A.jpg/revision/latest?cb=20180104121141",
+		"name": "Jess Jelly"
+	}
+}
+```
+
+### `POST /api/article`
+
+- Adds an article to the databased
+- `author` and `topic` must be valid and exist
+- Example request body:
+
+```
+            {
+				title: 'Test article is my passion',
+				//TOPIC && AUTHOR are FOREIGN KEYS
+				topic: 'mitch',
+				author: 'butter_bridge',
+				body: 'This is a test article. My mere existence is reduced to a test',
+				article_img_url:
+					'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+			}
+```
+
+- Example response body:
+
+```
+{
+      article_id: 13,
+      title: 'Test article is my passion',
+      topic: 'mitch',
+      author: 'butter_bridge',
+      body: 'This is a test article. My mere existence is reduced to a test',
+      created_at: '2023-05-12T12:31:32.428Z',
+      votes: 0,
+      article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+      comment_count: 0
+    }
+```
+
+### `PATCH  /api/comments/:comment_id`
+
+- Increments the comments's `votes` property by the `inc_votes` property in the request body
+- Example request body:
+
+```
+{ inc_votes: 1 }
+```
+
+---
+
+Copyright (c) 2023 - [Cristóbal Gutiérrez Torrubia](https://www.linkedin.com/in/cgtorrubia/)
