@@ -25,7 +25,6 @@ exports.selectArticleID = (articleId, count) => {
 	})
 }
 
-
 exports.selectArticlesComment = (articleId) => {
 	if (articleId === 'teapot')
 		return Promise.reject({ status: 418, msg: "Hi, I'm just a tiny teapot!" })
@@ -40,8 +39,10 @@ exports.selectArticlesComment = (articleId) => {
 		})
 	})
 }
-exports.selectArticles = (sort_by, order, topic) => {
+exports.selectArticles = (sort_by, order, limit, p, topic) => {
 	//Excluding "article_img_url" as there is no point of sorting it by images.
+	console.log(sort_by, order, limit, p, topic)
+
 	const validSortQueries = [
 		'article_id',
 		'author',
@@ -51,6 +52,8 @@ exports.selectArticles = (sort_by, order, topic) => {
 		'body',
 		'votes',
 		'comment_count',
+		'limit',
+		'p',
 	]
 
 	if (!validSortQueries.includes(sort_by)) {
@@ -63,16 +66,20 @@ exports.selectArticles = (sort_by, order, topic) => {
 	const queryValues = []
 	let queryStr = `SELECT articles.author, articles.title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(*)::INT as comment_count
 	FROM articles
-	
 	LEFT JOIN comments ON comments.article_id = articles.article_id `
 
 	if (topic) {
-		queryStr += ` WHERE topic = $1 `
+		queryStr += ` WHERE topic = $1`
 		queryValues.push(topic)
 	}
 
 	queryStr += `GROUP BY articles.article_id
-	ORDER BY ${sort_by} ${order};`
+	ORDER BY ${sort_by} ${order}`
+
+	queryStr += `
+	LIMIT ${limit} OFFSET ${limit * (p - 1)};
+	`
+	console.log(queryStr)
 
 	return db.query(queryStr, queryValues).then((result) => {
 		if (result.rows.length === 0) {

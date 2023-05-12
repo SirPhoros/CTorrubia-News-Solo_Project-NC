@@ -30,8 +30,14 @@ exports.getArticlesComment = (req, res, next) => {
 		})
 }
 exports.getArticle = (req, res, next) => {
-	let { sort_by = 'created_at', order = 'desc', topic } = req.query
-	selectArticles(sort_by, order, topic)
+	let {
+		sort_by = 'created_at',
+		order = 'desc',
+		topic,
+		limit = 10,
+		p = 1,
+	} = req.query
+	selectArticles(sort_by, order, limit, p, topic)
 		.then((articles) => {
 			res.status(200).send({ articles: articles })
 		})
