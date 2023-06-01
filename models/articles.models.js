@@ -80,12 +80,25 @@ exports.selectArticles = (sort_by, order, limit, p, topic) => {
 	LIMIT ${limit} OFFSET ${limit * (p - 1)};
 	`
 
-	return db.query(queryStr, queryValues).then((result) => {
-		if (result.rows.length === 0) {
-			return Promise.reject({ status: 404, msg: 'Article not found' })
-		}
-		return result.rows
-	})
+	return db
+		.query(queryStr, queryValues)
+		.then((result) => {
+			if (result.rows.length === 0) {
+				return Promise.reject({ status: 404, msg: 'Article not found' })
+			}
+			return result
+		})
+		.then((result) => {
+			return Promise.all([
+				result,
+				db.query('SELECT COUNT(*)::INT FROM articles'),
+			])
+		})
+		.then(([query1, query2]) => {
+			const result = query1.rows
+			const count = query2.rows[0].count
+			return [result, count]
+		})
 }
 
 exports.updateArticle = (newVote, articleID) => {

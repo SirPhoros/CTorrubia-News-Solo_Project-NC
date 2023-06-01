@@ -711,16 +711,18 @@ describe('GET /api/articles - Pagination', () => {
 		return request(app)
 			.get('/api/articles')
 			.expect(200)
-			.then(({ body: { articles } }) => {
+			.then(({ body: { count, articles } }) => {
 				expect(articles.length).toBe(10)
+				expect(count).toBe(12)
 			})
 	})
 	test('GET - status 200 - returns an array with the pagination in personalised settings (a page of 12 items)', () => {
 		return request(app)
 			.get('/api/articles?limit=12')
 			.expect(200)
-			.then(({ body: { articles } }) => {
+			.then(({ body: { count, articles } }) => {
 				expect(articles.length).toBe(12)
+				expect(count).toBe(12)
 			})
 	})
 	test('GET - status 200 - returns maximun the element even if it smaller than the limit', () => {

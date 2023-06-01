@@ -39,8 +39,8 @@ exports.getArticle = (req, res, next) => {
 		p = 1,
 	} = req.query
 	selectArticles(sort_by, order, limit, p, topic)
-		.then((articles) => {
-			res.status(200).send({ articles: articles })
+		.then(([articles, count]) => {
+			res.status(200).send({ count: count, articles: articles })
 		})
 		.catch((err) => {
 			next(err)
