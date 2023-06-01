@@ -64,11 +64,13 @@ exports.selectArticles = (sort_by, order, limit, p, topic) => {
 	}
 
 	const queryValues = []
+	let countQuery = 'SELECT COUNT(*)::INT FROM articles'
 	let queryStr = `SELECT articles.author, articles.title, articles.article_id, topic, articles.created_at, articles.votes, article_img_url, COUNT(*)::INT as comment_count
 	FROM articles
 	LEFT JOIN comments ON comments.article_id = articles.article_id `
 
 	if (topic) {
+		countQuery += ` WHERE topic = $1`
 		queryStr += ` WHERE topic = $1`
 		queryValues.push(topic)
 	}
@@ -89,10 +91,7 @@ exports.selectArticles = (sort_by, order, limit, p, topic) => {
 			return result
 		})
 		.then((result) => {
-			return Promise.all([
-				result,
-				db.query('SELECT COUNT(*)::INT FROM articles'),
-			])
+			return Promise.all([result, db.query(countQuery, queryValues)])
 		})
 		.then(([query1, query2]) => {
 			const result = query1.rows

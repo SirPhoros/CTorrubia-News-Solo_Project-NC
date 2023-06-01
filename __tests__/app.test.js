@@ -659,12 +659,13 @@ describe('GET /api/articles - Queries Handling', () => {
 				})
 			})
 	})
-	test('GET - status 200 - returns an array with multiple queries operating at once', () => {
+	test.only('GET - status 200 - returns an array with multiple queries operating at once', () => {
 		return request(app)
 			.get('/api/articles?sort_by=article_id&order=asc&topic=mitch')
 			.expect(200)
-			.then(({ body: { articles } }) => {
+			.then(({ body: { count, articles } }) => {
 				expect(articles.length).toBe(10) // After Limit Feature Applied - Total of 11.
+				expect(count).toBe(11)
 				expect(articles).toBeSortedBy('article_id', {
 					ascending: true,
 				})
